@@ -1,0 +1,4 @@
+Flask==2.2.3
+tensorflow==2.12.0
+Werkzeug==2.2.3
+numpy==1.23.5
