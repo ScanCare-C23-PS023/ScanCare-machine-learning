@@ -40,8 +40,8 @@ def predict():
             img = img_to_array(img)
             img = np.expand_dims(img, axis=0) # Add an extra dimension to match the input shape of the model
             model = keras.models.load_model('model.h5')
-            class_names = ['nodul', 'papula', 'pustula']
-            class_ids = ['jnodul', 'jpapula', 'jpustula']
+            class_names = ['bopeng', 'bruntusan', 'cystic', 'papula', 'pustula']
+            class_ids = ['bopeng','bruntusan','jcystic', 'jpapula', 'jpustula']
             prediction = model.predict(img)
             highest_prob_indices = np.argsort(prediction[0])[::-1][:3]  # Get the indices of the three highest probabilities
             predicted_classes = [class_names[i] for i in highest_prob_indices]
@@ -58,7 +58,7 @@ def predict():
                 
                 result.append({
                     "id": class_id,
-                    "name": f"{class_name.title()} Acne",
+                    "name": f"{class_name.title()}",
                     "percentage": f"{percentage:.0f}%",
                     "bg_color": bg_color,
                 })

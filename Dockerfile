@@ -7,6 +7,13 @@ ENV APP_HOME /app
 WORKDIR $APP_HOME
 COPY . ./
 
+# Install curl or wget (if not already included in the base image)
+RUN apt-get update && apt-get install -y curl
+
+# Download the model file from GitHub release
+RUN curl -LJO https://github.com/EriSetyawan166/ScanCare-Modelling/releases/download/scratch/model.h5
+
+
 # Install production dependencies.
 RUN pip install --no-cache-dir -r requirements.txt
 
