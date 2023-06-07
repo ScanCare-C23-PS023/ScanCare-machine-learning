@@ -11,7 +11,7 @@ COPY . ./
 RUN apt-get update && apt-get install -y curl
 
 # Download the model file from GitHub release
-RUN curl -LJO https://github.com/EriSetyawan166/ScanCare-Modelling/releases/download/scratch/model.h5
+RUN curl -LJO https://github.com/EriSetyawan166/ScanCare-Modelling/releases/download/transfer-learning-mobilenetv2-v1.0/model.h5
 
 
 # Install production dependencies.

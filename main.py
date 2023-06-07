@@ -1,3 +1,4 @@
+import datetime
 from flask import Flask, jsonify, request
 from werkzeug.utils import secure_filename
 import os
@@ -5,11 +6,26 @@ import numpy as np
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 from tensorflow.keras.models import load_model
 import tensorflow.keras as keras
+from google.cloud import storage
+
 
 app = Flask(__name__)
 app.config['ALLOWED_EXTENSIONS'] = set(['png', 'jpg', 'jpeg'])
 app.config['UPLOAD_FOLDER'] = 'static/upload/'
 model = load_model('model.h5')
+
+def upload_file_to_bucket(bucket_name, local_file_path, destination_blob_name):
+    # Instantiates a client
+    storage_client = storage.Client()
+
+    # Gets the bucket
+    bucket = storage_client.get_bucket(bucket_name)
+
+    # Uploads a local file to the bucket
+    blob = bucket.blob(destination_blob_name)
+    blob.upload_from_filename(local_file_path)
+
+    print(f"File {local_file_path} uploaded to {bucket_name}/{destination_blob_name}.")
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -36,31 +52,38 @@ def predict():
             img_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
             
             
-            img = load_img(img_path, target_size=(150,150)) # Resize the image to the size expected by the model
+            img = load_img(img_path, target_size=(224,224)) # Resize the image to the size expected by the model
             img = img_to_array(img)
             img = np.expand_dims(img, axis=0) # Add an extra dimension to match the input shape of the model
             model = keras.models.load_model('model.h5')
-            class_names = ['bopeng', 'bruntusan', 'cystic', 'papula', 'pustula']
-            class_ids = ['bopeng','bruntusan','jcystic', 'jpapula', 'jpustula']
+            class_names = ['bopeng', 'jerawat pasir', 'cystic', 'papula', 'pustula']
+            class_ids = ['bopeng','jpasir','jcystic', 'jpapula', 'jpustula']
+            class_bgs = ['#96B9CD', '#F1AEB7', '#F2A2AB', '#F5BBAF', '#C2DADC']
             prediction = model.predict(img)
             highest_prob_indices = np.argsort(prediction[0])[::-1][:3]  # Get the indices of the three highest probabilities
             predicted_classes = [class_names[i] for i in highest_prob_indices]
             percentages = prediction[0][highest_prob_indices] * 100
+            
+            timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+            bucket_name = 'scancare-db'
+            local_file_path = "static/upload/"+filename
+            destination_blob_name = "upload/" + timestamp + filename
+
+            upload_file_to_bucket(bucket_name, local_file_path, destination_blob_name)
 
             result = []
-            bg_colors = ["#FFF5BBAF", "#FFF4B5AF", "#FFFFFFFF"]
 
             for i in range(3):
                 class_name = predicted_classes[i]
                 percentage = percentages[i]
-                bg_color = bg_colors[i]
+                class_bg = class_bgs[class_names.index(class_name)]
                 class_id = class_ids[class_names.index(class_name)]
                 
                 result.append({
                     "id": class_id,
                     "name": f"{class_name.title()}",
                     "percentage": f"{percentage:.0f}%",
-                    "bg_color": bg_color,
+                    "bg_color": class_bg,
                 })
 
             return jsonify(result), 200

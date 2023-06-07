@@ -4,3 +4,4 @@ Werkzeug==2.2.3
 numpy==1.23.5
 gunicorn
 pillow==9.3.0
+google-cloud-storage==2.9.0
