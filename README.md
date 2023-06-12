@@ -43,11 +43,16 @@ source venv/bin/activate
 ```bash
 Install the required Python packages.
 ```
-5. Start the Flask application.
+5. For the model refer to
+```bash
+https://github.com/ScanCare-C23-PS023/ScanCare-Modeling
+```
+
+6. Start the Flask application.
 ```bash
 python main.py
 ```
-6. Access the application by visiting http://localhost:5000/predict in postman.
+7. Access the application by visiting http://localhost:5000/predict in postman.
 
 ## Authors
 - Ilham Zakariya - Mobile Development - [Maxisud](https://github.com/Maxisud)
