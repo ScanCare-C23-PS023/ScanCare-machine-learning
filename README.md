@@ -44,9 +44,7 @@ source venv/bin/activate
 Install the required Python packages.
 ```
 5. For the model refer to
-```bash
 https://github.com/ScanCare-C23-PS023/ScanCare-Modeling
-```
 
 6. Start the Flask application.
 ```bash
